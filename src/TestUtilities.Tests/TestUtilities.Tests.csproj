@@ -54,6 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyChangedTesterTest.cs" />
+    <Compile Include="TypeToTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TestUtilities\TestUtilities.csproj">
