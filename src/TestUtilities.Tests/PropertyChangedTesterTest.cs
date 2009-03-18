@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using NUnit.Framework.SyntaxHelpers;
 
 namespace TestUtilities.Tests
 {
@@ -47,6 +48,42 @@ namespace TestUtilities.Tests
                 
             }
             
+        }
+
+        [Test]
+        public void VerifyAllPublicProperties()
+        {
+            List<string> list = new List<string>();
+            _test.PropertyChanged += (sender, args) => list.Add(args.PropertyName);
+
+            _tester.VerifyAllPublicProperties();
+
+            Assert.That(list, Is.EquivalentTo(new[]{"SomeProperty", "SomeOtherProperty"}));
+
+        }
+
+        [Test]
+        public void FailsIfDoesntRaise()
+        {
+            var obj = new TypeThatDoesntRaise();
+            var tester = new PropertyChangedTester<TypeThatDoesntRaise>(obj);
+
+            try
+            {
+                tester.VerifyAllPublicProperties();
+                Assert.Fail();
+            }
+            catch (VerifyException)
+            {
+            }
+
+        }
+
+        [Test]
+        public void ProtectedProperty()
+        {
+            var tester = new PropertyChangedTester<TypeWithProtectedProperty>(new TypeWithProtectedProperty());
+            tester.VerifyAllPublicProperties();
         }
 
 

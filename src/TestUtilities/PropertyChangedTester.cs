@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace TestUtilities
@@ -45,6 +46,27 @@ namespace TestUtilities
             }
 
             return me.Member.Name;
+        }   
+
+        public void VerifyAllPublicProperties()
+        {
+            var props = _obj.GetType().GetProperties().Where(prop => prop.CanWrite && prop.GetSetMethod(false) != null);
+
+            var failedProperties = new List<string>();
+            foreach (var prop in props)
+            {
+                prop.SetValue(_obj, prop.PropertyType.DefaultValue(), null);
+                if (!_raisedEvents.Contains(prop.Name))
+                {
+                    failedProperties.Add(prop.Name);
+                }
+            }
+
+            if (failedProperties.Count > 0)
+            {
+                throw new VerifyException("The following properties did not raise PropertyChanged: " + failedProperties.Aggregate((s1, s2) => s1 + ", " + s2));
+            }
+
         }
     }
 }
